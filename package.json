@@ -1,0 +1,19 @@
+{
+  "name": "poo",
+  "version": "1.0.0",
+  "description": "repositório com exercícios de programação orientada a objetos",
+  "main": "index.js",
+  "scripts": {
+    "start": "sucrase-node src/aula01/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "sucrase": "^3.35.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
