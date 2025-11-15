@@ -175,27 +175,6 @@ Exemplos:
 “dd, M de aaaa” = 01, janeiro de 1990
 
 */
-
-const validateDate = (m: string, d: string, y: string): boolean => {
-
-    const month = Number(m);
-    const day = Number(d);
-    const year = Number(y);
-
-
-    const daysInMonth = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
-   
-    if(daysInMonth[month] === undefined) return false
-    if (year % 400 === 0 || year % 4 === 0 && year % 100 !== 0) {
-        daysInMonth[2] = 29
-    }
-    if (month < 1 || month > 12 || day < 1)  return false
-    if (day > daysInMonth[month]) return false
-
-    return true        
-}
-
-
 class Data {
     day: string;
     month: string;
@@ -203,7 +182,7 @@ class Data {
 
     constructor(d:string, m: string, y: string) {
         
-        const date = validateDate(m, d, y)        
+        const date = Data.validateDate(m, d, y)        
        
         if (date === false) {            
                 this.day = "01";
@@ -263,6 +242,31 @@ class Data {
 
         return -1  
     }
+
+    format(d:string, m:string, y:string) {
+        let day = d
+        let month = m
+        let year = y
+    }
+
+    private static validateDate(m: string, d: string, y: string): boolean {
+
+        const month = Number(m);
+        const day = Number(d);
+        const year = Number(y);
+    
+    
+        const daysInMonth = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
+       
+        if(daysInMonth[month] === undefined) return false
+        if (year % 400 === 0 || year % 4 === 0 && year % 100 !== 0) {
+            daysInMonth[2] = 29
+        }
+        if (month < 1 || month > 12 || day < 1)  return false
+        if (day > daysInMonth[month]) return false
+    
+        return true        
+    }
 }
 
 const date: Data = new Data("28","02","2025")
@@ -273,3 +277,211 @@ console.log(date.compare(futureDate))
 console.log(date.compare(date))
 console.log(previousDate);
 console.log(futureDate);
+
+
+// gabarito dos exerícios
+
+
+class Student {
+    private _enrollment: string;
+    private _name: string;
+    private _examsGrades: number[];
+    private _assignmentsGrades: number[];
+  
+    constructor(enrollment: string, name: string) {
+      this._enrollment = enrollment;
+      this._name = name;
+      this._examsGrades = [];
+      this._assignmentsGrades = [];
+    }
+  
+    get enrollment(): string {
+      return this._enrollment;
+    }
+  
+    set enrollment(value: string) {
+      this._enrollment = value;
+    }
+  
+    get name(): string {
+      return this._name;
+    }
+  
+    set name(value: string) {
+      if (value.length < 3) {
+        throw new Error('O nome deve conter no mínimo 3 caracteres.');
+      }
+  
+      this._name = value;
+    }
+  
+    get examsGrades(): number[] {
+      return this._examsGrades;
+    }
+  
+    set examsGrades(value: number[]) {
+      if (value.length > 4) {
+        throw new Error('A pessoa estudante só pode possuir 4 notas de provas.');
+      }
+  
+      this._examsGrades = value;
+    }
+  
+    get assignmentsGrades(): number[] {
+      return this._assignmentsGrades;
+    }
+  
+    set assignmentsGrades(value: number[]) {
+      if (value.length > 2) {
+        throw new Error(
+          'A pessoa estudante só pode possuir 2 notas de trabalhos.',
+        );
+      }
+  
+      this._assignmentsGrades = value;
+    }
+  }
+  
+  // Para testar!
+  
+  const personOne = new Student('202001011', 'Maria da Silva');
+  
+  console.log(personOne);
+  
+  const personTwo = new Student('202001012', 'João da Silva');
+  
+  console.log(personTwo);
+  
+
+  // Client.ts
+/*export default class Client {
+    private _name = String();
+  
+    constructor(name: string) {
+      this.name = name;
+    }
+  
+    get name(): string {
+      return this._name;
+    }
+  
+    set name(value: string) {
+      if (value.length < 3) {
+        throw new Error('O nome deve conter no mínimo 3 caracteres.');
+      }
+  
+      this._name = value;
+    }
+  }*/
+
+  /*
+  // OrderItem.ts
+export default class OrderItem {
+  private _name: string;
+  private _price: number;
+
+  constructor(name: string, price: number) {
+    this._name = name;
+    this._price = price;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  set name(value: string) {
+    if (value.length < 3) {
+      throw new Error('O nome deve conter no mínimo 3 caracteres.');
+    }
+
+    this._name = value;
+  }
+
+  get price(): number {
+    return this._price;
+  }
+
+  set price(value: number) {
+    if (value < 0) throw new Error('O preço deve ser positivo.');
+
+    this._price = value;
+  }
+}
+  */
+ /*// Order.ts
+import Client from './Client';
+import OrderItem from './OrderItem';
+
+export default class Order {
+  private _client: Client;
+  private _items: OrderItem[] = [];
+  private _paymentMethod: string;
+  private _discount = 0;
+
+  constructor(
+    client: Client, 
+    items: OrderItem[], 
+    paymentMethod: string, 
+    discount: number,
+  ) {
+    this._client = client;
+    this.items = items;
+    this._paymentMethod = paymentMethod;
+    this.discount = discount;
+  }
+
+  get client(): Client {
+    return this._client;
+  }
+
+  set client(value: Client) {
+    this._client = value;
+  }
+
+  get items(): OrderItem[] {
+    return this._items;
+  }
+
+  set items(value: OrderItem[]) {
+    if (value.length === 0) {
+      throw new Error('O pedido deve ter pelo meno um item.');
+    }
+
+    this._items = value;
+  }
+
+  get paymentMethod(): string {
+    return this._paymentMethod;
+  }
+
+  set paymentMethod(value: string) {
+    this._paymentMethod = value;
+  }
+
+  get discount(): number {
+    return this._discount;
+  }
+
+  set discount(value: number) {
+    if (value < 0) {
+      throw new Error('O desconto não pode ser um valor negativo.');
+    }
+
+    this._discount = value;
+  }
+} /* index.ts
+
+import Client from './Client';
+import Order from './Order';
+import OrderItem from './OrderItem';
+
+const client = new Client('João');
+
+const sandwich = new OrderItem('Sanduíche Natural', 5.00);
+const juice = new OrderItem('Suco de Abacaxi', 5.00);
+const dessert = new OrderItem('Gelatina de Uva', 2.50);
+
+const order = new Order(client, [sandwich, juice, dessert], 'dinheiro', 0.10);
+
+console.log(order);
+*/
