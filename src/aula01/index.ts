@@ -145,10 +145,10 @@ const order1: OrderedItems = new OrderedItems('lanche', 10,);
 const order2: OrderedItems = new OrderedItems('suco', 5,);
 
 const joaoOrders: Order = new Order(joao, [order1, order2], 'crédito')
-console.log(joaoOrders)
-console.log(joaoOrders.total())
-console.log(joaoOrders.discount)
-console.log(joaoOrders.totalWithDiscount())
+// console.log(joaoOrders)
+// console.log(joaoOrders.total())
+// console.log(joaoOrders.discount)
+// console.log(joaoOrders.totalWithDiscount())
 
 /*Exercício 5: Escreva uma classe Data cuja instância represente uma data. Esta classe deverá conter três atributos: o dia, o mês e o ano.
 
@@ -176,18 +176,100 @@ Exemplos:
 
 */
 
+const validateDate = (m: string, d: string, y: string): boolean => {
+
+    const month = Number(m);
+    const day = Number(d);
+    const year = Number(y);
+
+
+    const daysInMonth = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
+   
+    if(daysInMonth[month] === undefined) return false
+    if (year % 400 === 0 || year % 4 === 0 && year % 100 !== 0) {
+        daysInMonth[2] = 29
+    }
+    if (month < 1 || month > 12 || day < 1)  return false
+    if (day > daysInMonth[month]) return false
+
+    return true        
+}
+
+
 class Data {
-    day: number;
-    month: number;
-    year: number;
+    day: string;
+    month: string;
+    year: string;
 
-    constructor(d:number, m: number, y: number) {
+    constructor(d:string, m: string, y: string) {
+        
+        const date = validateDate(m, d, y)        
+       
+        if (date === false) {            
+                this.day = "01";
+                this.month = "01";
+                this.year = "1990";
+        } else {
+            this.day = d;
+            this.month = m;
+            this.year = y;
+        }
+                   
+    }
+    getMonthName(): string {
+        
+        const months = {
+            "01": "Janeiro",
+            "02": "Fevereiro",
+            "03": "Março",
+            "04": "Abril",
+            "05": "Maio",
+            "06": "Junho",
+            "07": "Julho",
+            "08": "Agosto",
+            "09": "Setembro",
+            "10": "Outubro",
+            "11": "Novembro",
+            "12": "Dezembro"
+          };
 
+          type monthKeys = keyof typeof months;
+          const m = this.month as monthKeys
+          return months[m]
+    }
 
-        this.day = d;
-        this.month = m;
-        this.year = y;
+    isLeapYear(): boolean {
+        const year = Number(this.year)
+
+        if (year % 400 === 0 || year % 4 === 0 && year % 100 !== 0) return true
+        
+        return false        
+    }
+
+    compare(data:Data): number {
+        const month = this.month
+        const day = this.day
+        const year = this.year
+
+        if(data.month === month && data.day === day && data.year === year) return 0
+
+        const checkYear = Number(year) > Number(data.year)
+        const checkMonth = Number(month) > Number(data.month)
+        const checkDay = Number(day) > Number(data.day)
+
+        if (checkYear === true) return 1
+        if (checkMonth === true) return 1
+        if (checkDay === true) return 1
+
+        return -1  
     }
 }
 
-console.log(new Date("02-29-2025").getTime())
+const date: Data = new Data("28","02","2025")
+const previousDate: Data = new Data("27","02","2025")
+const futureDate: Data = new Data("28","02","2026")
+console.log(date.compare(previousDate));
+console.log(date.compare(futureDate))
+console.log(date.compare(date))
+console.log(previousDate);
+console.log(futureDate);
