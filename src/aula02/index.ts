@@ -300,135 +300,223 @@ Assinado por: International Sales SA
     - A data de nascimento não pode ser uma data no futuro
     - A pessoa não pode possuir mais de 120 anos*/
 
+// ./Person.ts
+
 class Person {
-  private _name: string;
-  private _birthDate: string;
-  constructor() {}
+  protected MINIMUM_NAME_LENGTH = 3;
+  protected MAXIMUM_AGE = 120;
+
+  constructor(
+    private _name: string,
+    private _birthDate: Date,
+  ) {
+    this.validatePerson(); // validação do objeto criado com o construtor da classe
+  }
+
   get name(): string {
-    return this._name
+    return this._name;
   }
-  get birthDate():string {
-    return this._birthDate
-  }
+
   set name(name: string) {
-    if (name.length < 3) {
-      console.log('O nome de usuário precisa ter no mínimo 3 caracteres')
-    }
-    this._name = name
+    this.validateName(name);
+    this._name = name;
   }
-  set birthDate(birthDate: string) {
-    const currentDate = new Date();
-    const personBirthDate = new Date(birthDate)
 
-    if (personBirthDate > currentDate) {
-      console.log('Data de nascimento inválida')
+  get birthDate(): Date {
+    return this._birthDate;
+  }
+
+  set birthDate(date: Date) {
+    this.validateBirthDate(date);
+    this._birthDate = date;
+  }
+
+  static getAge(date: Date): number {
+    const diff = Math.abs(new Date().getTime() - date.getTime()); // diferença em milissegundos entre a data atual e a data passada por parâmetro
+    const yearMs = 31_536_000_000; // 1 ano = 31536000000 milissegundos
+    return Math.floor(diff / yearMs);
+  }
+
+  private validateName(name: string): void {
+    if (name.length < this.MINIMUM_NAME_LENGTH) {
+      throw new Error(`O nome deve conter no mínimo ${this.MINIMUM_NAME_LENGTH} caracteres.`);
     }
-    if (currentDate.getFullYear() - personBirthDate.getFullYear() > 120) {
-      console.log('a pessoa não pode ter mais de 120 anos')
-    } 
+  }
 
-    this._birthDate = birthDate;
+  private validateBirthDate(date: Date): void {
+    if (date.getTime() > new Date().getTime()) {
+      throw new Error('A data de nascimento não pode ser uma data no futuro.');
+    }
+    if (Person.getAge(date) > this.MAXIMUM_AGE) {
+      throw new Error(`A pessoa deve ter no máximo ${this.MAXIMUM_AGE} anos.`);
+    }
+  }
+
+  private validatePerson(): void {
+    this.validateName(this.name);
+    this.validateBirthDate(this.birthDate);
   }
 }
+
+const maria = new Person('Maria da Consolação', new Date('1980/01/25'));
+const luiza = new Person('Luiza Andrade', new Date('2005/10/02'));
+
+console.log(maria);
+console.log(luiza);
+
+// deve retornar erro
+// const invalidPersonName = new Person('An', new Date('2000/06/07'));
+// deve retornar erro
+// const invalidPersonAge = new Person('Ana Vitória', new Date('1900/06/07'));
+
 
 /**Exercício 2
 Refatore nossa classe de pessoa estudante para que ela herde da nossa classe pessoa. */
 
 class Student extends Person {
-  private enrollment: number
-  private _examGrades: number[]
-  private _assignmentGrades: number[]
+  private _enrollment = String();
+  private _examsGrades: number[] = [];
+  private _assignmentsGrades: number[] = [];
 
-  constructor(name: string, birthDate: string) {
-    super()
-    super.name = name
-    super.birthDate = birthDate
-    this.enrollment = Student.generateEnrollment()
+  constructor(name: string, birthDate: Date) {
+    super(name, birthDate);
+    this.enrollment = this.generateEnrollment();
   }
 
-  private static generateEnrollment() {
-    let counter = 5
-    let enrollmentNumber = ''
-    
-    do {
-      enrollmentNumber += Math.floor(Math.random() * 99).toString();
-      counter --;
-    } while (counter > 0)
-  
-    return Number(enrollmentNumber)
+  get enrollment(): string {
+    return this._enrollment;
   }
 
-  sumGrades() {
-    const grades = [...this._assignmentGrades, ...this._examGrades]
-    return grades.reduce((acc, grades) => acc + grades, 0);
-  }
-  sumAverageGrade() {
-    const grades = [...this._assignmentGrades, ...this._examGrades]
-    return grades.reduce((acc, grades) => acc + grades, 0)/grades.length
-  }
-  set examGrades(grades:number[]) {
-    if (grades.length < 1 || grades.length > 4) {
-      console.log('Precisa ter no máximo 4 notas na prova') 
-    } else {
-      this._examGrades = grades
-    }
-  }
-  set assignmentGrades(grades:number[]) {
-    if (grades.length < 1 || grades.length > 2) {
-      console.log('Precisa ter no máximo 2 notas na prova') 
-    } else {
-      this._assignmentGrades = grades
-    }
+
+  //esse método checa se a inscrição da pessoa estudante possui no mínimo 16 caracteres
+  set enrollment(value: string) {
+    if (value.length < 16) throw new Error('A matrícula deve possuir no mínimo 16 caracteres.');
+
+    this._enrollment = value;
   }
 
+  get examsGrades(): number[] {
+    return this._examsGrades;
+  }
+
+  set examsGrades(value: number[]) {
+    if (value.length > 4) throw new Error('A pessoa estudante só pode possuir 4 notas de provas.');
+
+    this._examsGrades = value;
+  }
+
+  get assignmentsGrades(): number[] {
+    return this._assignmentsGrades;
+  }
+
+  set assignmentsGrades(value: number[]) {
+    if (value.length > 2) throw new Error('A pessoa estudante só pode possuir 2 notas de trabalhos.');
+
+    this._assignmentsGrades = value;
+  }
+
+  //esse método gera um id de inscrição aleatório baseado na data de cadastro da pessoa estudante
+  generateEnrollment(): string {
+    const randomStr = String(Date.now() * (Math.random() + 1)).replace(/\W/g, '');
+
+    return `STU${randomStr}`;
+  }
 }
 
-const tatiana = new Student("Tatiana", "03-01-1990");
-const sebastiana = new Student("Sebastiana", "03-02-1990");
-const derpina = new Student("Derpina", "03-03-1990");
-const mariana = new Student("Mariana", "03-04-1990");
-const carla = new Student("Carla", "03-05-1990");
 
-console.log(tatiana) 
-console.log(sebastiana)
-console.log(derpina)
-console.log(mariana) 
-console.log(carla)
+class Student extends Person {
+  private _enrollment = String();
+  private _examsGrades: number[] = [];
+  private _assignmentsGrades: number[] = [];
+
+  constructor(name: string, birthDate: Date) {
+    super(name, birthDate);
+    this.enrollment = this.generateEnrollment();
+  }
+
+  get enrollment(): string {
+    return this._enrollment;
+  }
+
+
+  //esse método checa se a inscrição da pessoa estudante possui no mínimo 16 caracteres
+  set enrollment(value: string) {
+    if (value.length < 16) throw new Error('A matrícula deve possuir no mínimo 16 caracteres.');
+
+    this._enrollment = value;
+  }
+
+  get examsGrades(): number[] {
+    return this._examsGrades;
+  }
+
+  set examsGrades(value: number[]) {
+    if (value.length > 4) throw new Error('A pessoa estudante só pode possuir 4 notas de provas.');
+
+    this._examsGrades = value;
+  }
+
+  get assignmentsGrades(): number[] {
+    return this._assignmentsGrades;
+  }
+
+  set assignmentsGrades(value: number[]) {
+    if (value.length > 2) throw new Error('A pessoa estudante só pode possuir 2 notas de trabalhos.');
+
+    this._assignmentsGrades = value;
+  }
+
+  //esse método gera um id de inscrição aleatório baseado na data de cadastro da pessoa estudante
+  generateEnrollment(): string {
+    const randomStr = String(Date.now() * (Math.random() + 1)).replace(/\W/g, '');
+
+    return `STU${randomStr}`;
+  }
+}
 
 /** 🚀 Exercício 3
 Crie uma interface que representará uma pessoa funcionária.*/
 
 interface Employee {
-  resgistration: number;
+  registration: string;
   salary: number;
-  admissionDate: string;
+  admissionDate: Date;
   generateRegistration():string
 }
+
+const testInterfaceEmployee: Employee = {
+  registration: 'FNC1234567891011',
+  salary: 1200.00,
+  admissionDate: new Date(),
+
+  generateRegistration(): string {
+    const randomStr = String(Date.now() * (Math.random() + 1)).replace(/\W/g, '');
+
+    return `FNC${randomStr}`;
+  },
+};
+
+console.log(testInterfaceEmployee);
 
 /**🚀 Exercício 4
 Crie uma classe cujos objetos representem uma disciplina lecionada na escola. */
 
 class Subject {
-  private _name: string
-  constructor(name: string) {
-    if (!Subject.isNameValid(name)) {
-      throw new Error('')
-    }
-    this._name = name;
-  }
-  set name(name:string) {
-    if (!Subject.isNameValid(name)) {
-      throw new Error('O nome da disciplina deve ter 3 letras ou mais')
-    } 
-      this._name = name
-    
-  }
-  get name() {
-    return this._name
+  constructor(private _name: string) {
+    this.name = _name;
   }
 
-  private static isNameValid(name:string) {
-    return name.length >= 3
+  get name(): string {
+    return this._name;
+  }
+
+  set name(value: string) {
+    this.validateName(value);
+    this._name = value;
+  }
+
+  private validateName(value: string): void {
+    if (value.length < 3) throw new Error('O nome deve conter no mínimo 3 caracteres.');
   }
 }
 
@@ -475,4 +563,6 @@ class Teacher extends Person implements Employee {
 
 
 }
+
+console.log(String(Date.now() * (Math.random() + 1)).replace(/\W/g, ''))
 
