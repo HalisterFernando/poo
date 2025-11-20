@@ -7,7 +7,7 @@ class Clube <T> {
         this.quadras.push(quadra);
     }
 
-    public buscarQuadra(index: number): Quadra<T> {
+    public buscarQuadra(index: number): Quadra<T> | undefined {
         return this.quadras[index]
     }
 }
