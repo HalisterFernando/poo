@@ -1,5 +1,6 @@
 interface ITenis {
-    racket: string
+    piso: string,
+    dupla: boolean
 }
 
 export default ITenis;

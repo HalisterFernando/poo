@@ -1,7 +1,8 @@
 import Clube from "./Clube";
 import QuadraFutebol from "./QuadraFutebol";
+import IFutebol from "./interfaces/IFutebol";
 
-const clube = new Clube();
+const clube = new Clube<IFutebol>();
 const quadra = new QuadraFutebol();
 clube.adicionarQuadra(quadra);
 

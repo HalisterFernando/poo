@@ -2,15 +2,17 @@ import Quadra from "./Quadra"
 import IAgenda from "./interfaces/IAgenda"
 import ITenis from "./interfaces/ITenis"
 import { generateProtocol } from "./interfaces/IAgenda"
+import normas from "./normas/normasDeUso"
 
 class QuadraTenis extends Quadra<ITenis> {
+    public tenisData: ITenis = normas.tenis
 
     reserve(date: Date): IAgenda<ITenis> {
+        const protocolo = (Math.random() + 1).toString(30).substring(3);
         return {
-            // protocolo é o "id" da reserva, gere de forma aleatória
-            protocol: generateProtocol(),
-            date: new Date(),
-            rules: { racket: 'cravo' }
+            protocol: protocolo,
+            date: date,
+            rules: this.tenisData
           }
     }
 

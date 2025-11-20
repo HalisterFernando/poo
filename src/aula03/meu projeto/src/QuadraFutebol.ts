@@ -2,14 +2,16 @@ import Quadra from "./Quadra";
 import IAgenda from "./interfaces/IAgenda";
 import IFutebol from "./interfaces/IFutebol";
 import { generateProtocol } from "./interfaces/IAgenda";
+import normas from "./normas/normasDeUso";
 
 class QuadraFutebol extends Quadra<IFutebol> {
+    public soccerData: IFutebol = normas.futebol
     reserve(date: Date): IAgenda<IFutebol> {
+        const protocolo = (Math.random() + 1).toString(30).substring(3)
         return {
-            // protocolo é o "id" da reserva, gere de forma aleatória
-            protocol: generateProtocol(),
-            date: new Date(),
-            rules: { chuteira: 'cravo' }
+            protocol: protocolo,
+            date: date,
+            rules: this.soccerData
           }
     }
 
@@ -19,6 +21,6 @@ class QuadraFutebol extends Quadra<IFutebol> {
 
 }
 
-console.log(String.fromCharCode(97 + Math.floor(Math.random() * 26)))
+console.log((Math.random() + 1).toString(30).substring(3));
 
 export default QuadraFutebol
